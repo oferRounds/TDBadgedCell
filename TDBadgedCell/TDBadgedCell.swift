@@ -11,7 +11,7 @@ import UIKit
 /// TDBadgedCell is a table view cell class that adds a badge, similar to the badges in Apple's own apps
 /// The badge is generated as image data and drawn as a sub view to the table view sell. This is hopefully
 /// most resource effective that a manual draw(rect:) call would be
-class TDBadgedCell: UITableViewCell {
+@objc public class TDBadgedCell: UITableViewCell {
 
     /// Badge value
     public var badgeString : String = "" {
@@ -27,28 +27,28 @@ class TDBadgedCell: UITableViewCell {
     }
     
     /// Badge background color for normal states
-    public var badgeColor : UIColor = UIColor(red: 0, green: 0.478, blue: 1, alpha: 1.0)
+    public var badgeColor : UIColor = UIColor(red: 1.0, green: 81.0/255.0, blue: 0.0, alpha: 1.0)
     /// Badge background color for highlighted states
-    public var badgeColorHighlighted : UIColor = .darkGray
+    public var badgeColorHighlighted : UIColor = UIColor.darkGrayColor()
     
     /// Badge font size
-    public var badgeFontSize : Float = 11.0
+    public var badgeFontSize : Float = 14.0
     /// Badge text color
     public var badgeTextColor: UIColor?
     /// Corner radius of the badge. Set to 0 for square corners.
     public var badgeRadius : Float = 20
     /// The Badges offset from the right hand side of the Table View Cell
-    public var badgeOffset = CGPoint(x:10, y:0)
+    public var badgeOffset = CGPoint(x:20, y:0)
     
     /// The Image view that the badge will be rendered into
     internal let badgeView = UIImageView()
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         
         // Layout our badge's position
         var offsetX = badgeOffset.x
-        if(isEditing == false && accessoryType != .none || (accessoryView) != nil) {
+        if(editing == false && accessoryType != .None || (accessoryView) != nil) {
             offsetX = 0 // Accessory types are a pain to get sizing for?
         }
         
@@ -63,12 +63,12 @@ class TDBadgedCell: UITableViewCell {
     }
     
     // When the badge
-    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+    override public func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         drawBadge()
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
+    override public func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         drawBadge()
     }
@@ -76,42 +76,43 @@ class TDBadgedCell: UITableViewCell {
     /// Generate the badge image
     internal func drawBadge() {
         // Calculate the size of our string
-        let textSize : CGSize = NSString(string: badgeString).size(attributes:[NSFontAttributeName:UIFont.boldSystemFont(ofSize:CGFloat(badgeFontSize))])
+        let textSize : CGSize = NSString(string: badgeString).sizeWithAttributes([NSFontAttributeName:UIFont.boldSystemFontOfSize(CGFloat(badgeFontSize))])
         
         // Create a frame with padding for our badge
-        let height = textSize.height + 10
+        let height = textSize.height + 5
         var width = textSize.width + 16
         if(width < height) {
             width = height
         }
+        
         let badgeFrame : CGRect = CGRect(x:0, y:0, width:width, height:height)
         
         let badge = CALayer()
         badge.frame = badgeFrame
         
-        if(isHighlighted || isSelected) {
-            badge.backgroundColor = badgeColorHighlighted.cgColor
+        if(highlighted || selected) {
+            badge.backgroundColor = badgeColorHighlighted.CGColor
         } else {
-            badge.backgroundColor = badgeColor.cgColor
+            badge.backgroundColor = UIColor(red: 1.0, green: 81.0/255.0, blue: 0.0, alpha: 1.0).CGColor
         }
 
         badge.cornerRadius = (CGFloat(badgeRadius) < (badge.frame.size.height / 2)) ? CGFloat(badgeRadius) : CGFloat(badge.frame.size.height / 2)
         
         // Draw badge into graphics context
-        UIGraphicsBeginImageContextWithOptions(badge.frame.size, false, UIScreen.main.scale)
+        UIGraphicsBeginImageContextWithOptions(badge.frame.size, false, UIScreen.mainScreen().scale)
         let ctx = UIGraphicsGetCurrentContext()!
-        ctx.saveGState()
-        badge.render(in:ctx)
-        ctx.saveGState()
+        CGContextSaveGState(ctx)
+        badge.renderInContext(ctx)
+        CGContextSaveGState(ctx)
         
         // Draw string into graphics context
         if(badgeTextColor == nil) {
-            ctx.setBlendMode(CGBlendMode.clear)
+            CGContextSetBlendMode(ctx, .Clear)
         }
         
-        NSString(string: badgeString).draw(in:CGRect(x:8, y:5, width:textSize.width, height:textSize.height), withAttributes: [
-            NSFontAttributeName:UIFont.boldSystemFont(ofSize:CGFloat(badgeFontSize)),
-            NSForegroundColorAttributeName: badgeTextColor ?? UIColor.clear
+        NSString(string: badgeString).drawInRect(CGRectMake(8, 2, textSize.width, textSize.height), withAttributes: [
+            NSFontAttributeName:UIFont.boldSystemFontOfSize(CGFloat(badgeFontSize)),
+            NSForegroundColorAttributeName: badgeTextColor ?? UIColor.clearColor()
         ])
         
         let badgeImage = UIGraphicsGetImageFromCurrentImageContext()!
