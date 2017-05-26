@@ -91,7 +91,7 @@ import UIKit
         badge.frame = badgeFrame
         
         if(highlighted || selected) {
-            badge.backgroundColor = badgeColorHighlighted.CGColor
+            badge.backgroundColor = UIColor(red: 235.0/255.0, green: 61.0/255.0, blue: 0.0, alpha: 1.0).CGColor
         } else {
             badge.backgroundColor = UIColor(red: 1.0, green: 81.0/255.0, blue: 0.0, alpha: 1.0).CGColor
         }
