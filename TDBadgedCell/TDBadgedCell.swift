@@ -12,7 +12,7 @@ import UIKit
 /// The badge is generated as image data and drawn as a sub view to the table view sell. This is hopefully
 /// most resource effective that a manual draw(rect:) call would be
 @objc public class TDBadgedCell: UITableViewCell {
-
+    
     /// Badge value
     public var badgeString : String = "" {
         didSet {
@@ -45,6 +45,7 @@ import UIKit
     
     override public func layoutSubviews() {
         super.layoutSubviews()
+        
         
         // Layout our badge's position
         var offsetX = badgeOffset.x
@@ -84,7 +85,6 @@ import UIKit
         if(width < height) {
             width = height
         }
-        
         let badgeFrame : CGRect = CGRect(x:0, y:0, width:width, height:height)
         
         let badge = CALayer()
@@ -95,7 +95,7 @@ import UIKit
         } else {
             badge.backgroundColor = UIColor(red: 1.0, green: 81.0/255.0, blue: 0.0, alpha: 1.0).CGColor
         }
-
+        
         badge.cornerRadius = (CGFloat(badgeRadius) < (badge.frame.size.height / 2)) ? CGFloat(badgeRadius) : CGFloat(badge.frame.size.height / 2)
         
         // Draw badge into graphics context
@@ -107,17 +107,17 @@ import UIKit
         
         // Draw string into graphics context
         if(badgeTextColor == nil) {
-            CGContextSetBlendMode(ctx, .Clear)
+            CGContextSetBlendMode(ctx, CGBlendMode.Clear)
         }
         
-        NSString(string: badgeString).drawInRect(CGRectMake(8, 2, textSize.width, textSize.height), withAttributes: [
+        NSString(string: badgeString).drawInRect(CGRect(x:8, y:2, width:textSize.width, height:textSize.height), withAttributes: [
             NSFontAttributeName:UIFont.boldSystemFontOfSize(CGFloat(badgeFontSize)),
             NSForegroundColorAttributeName: badgeTextColor ?? UIColor.clearColor()
-        ])
+            ])
         
         let badgeImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
-
+        
         badgeView.frame = CGRect(x:0, y:0, width:badgeImage.size.width, height:badgeImage.size.height)
         badgeView.image = badgeImage
         
